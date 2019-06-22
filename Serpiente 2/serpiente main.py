@@ -21,6 +21,7 @@ def load_image(filename, transparent=False):
                 color = image.get_at((0,0))
                 image.set_colorkey(color, RLEACCEL)
         return image
+
 #Clases
 # ---------------------------------------------------------------------
 class Snake(object): 
@@ -36,7 +37,16 @@ class Snake(object):
         self.image6 = pygame.image.load('images/serpiente/CabezaAbajo.png')
 
         self.image8 = pygame.image.load('images/puas.png')
-
+        
+        self.image9 = pygame.image.load('images/serpiente/ColaDerecha.png')
+        self.image10 = pygame.image.load('images/serpiente/ColaIzquierda.png')
+        self.image11 = pygame.image.load('images/serpiente/ColaAbajo.png')
+        self.image12 = pygame.image.load('images/serpiente/ColaArriba.png')
+        
+        self.image13 = pygame.image.load('images/serpiente/izqabajo.png')
+        self.image14 = pygame.image.load('images/serpiente/derabajo.png')
+        self.image15 = pygame.image.load('images/serpiente/izqarriba.png')
+        self.image16 = pygame.image.load('images/serpiente/derarriba.png')
         
 
         
@@ -47,6 +57,7 @@ class Snake(object):
         self.timetoreload = 0
         self.direccion = ""
         self.body=[[540,360],[540-self.rect.w,360],[540-self.rect.w*2,360]]
+        self.bodyDireccion=["","",""]
 
     def handle_keys(self):
         key = pygame.key.get_pressed()
@@ -70,7 +81,7 @@ class Snake(object):
             self.body[0][0] -= self.rect.w
         elif self.direccion=="derecha":
             self.body[0][0] += self.rect.w
-
+        ##################################################      bordes
         if self.body[0][0]>ANCHO:
             self.body[0][0]=0
         if self.body[0][0]<0:
@@ -85,18 +96,27 @@ class Snake(object):
             for i in range(1,len(self.body)):
                 x=self.body[i][0]
                 y=self.body[i][1]
+                if x<gotox:
+                        self.bodyDireccion[i]="derecha"
+                elif x>gotox:
+                        self.bodyDireccion[i]="izquierda"
+                elif y>gotoy:
+                        self.bodyDireccion[i]="arriba"
+                elif y<gotoy:
+                        self.bodyDireccion[i]="abajo"
+                        
                 self.body[i][0]=gotox
                 self.body[i][1]=gotoy
                 gotox=x
                 gotoy=y
-        
-#    def add(self):
-  #      self.body.append([self.body[0][0],self.body[0][1]])#self.body.append(self.body[0].copy())
+    def add(self):
+        self.body.append([self.body[len(self.body)-1][0],self.body[len(self.body)-1][1]])#self.body.append(self.body[0].copy())
+        self.bodyDireccion.append(self.bodyDireccion[len(self.bodyDireccion)-1])
         
     def draw(self, surface):
         i=0
         for b in self.body:
-
+#cabeza
             if i==0 and self.direccion=="derecha":
                 surface.blit(self.image, (b[0], b[1]))
             elif i==0 and self.direccion=="izquierda":
@@ -105,23 +125,110 @@ class Snake(object):
                 surface.blit(self.image4, (b[0], b[1]))
             elif i==0 and self.direccion=="abajo":
                 surface.blit(self.image6, (b[0], b[1]))
-                
-            elif i!=0 and self.direccion=="derecha":
-                surface.blit(self.image2, (b[0], b[1]))
-            elif i!=0 and self.direccion=="izquierda":
-                surface.blit(self.image2, (b[0], b[1]))
-            elif i!=0 and self.direccion=="arriba":
-                surface.blit(self.image7, (b[0], b[1]))
-            elif i!=0 and self.direccion=="abajo":
-                surface.blit(self.image7, (b[0], b[1]))
 
-            elif i==0:
+         
+#cola
+            elif i==len(self.body)-1 and self.bodyDireccion[i]=="derecha":
+                surface.blit(self.image9, (b[0], b[1]))
+            elif i==len(self.body)-1 and self.bodyDireccion[i]=="izquierda":
+                surface.blit(self.image10, (b[0], b[1]))
+            elif i==len(self.body)-1  and self.bodyDireccion[i]=="arriba":
+                surface.blit(self.image12, (b[0], b[1]))
+            elif i==len(self.body)-1 and self.bodyDireccion[i]=="abajo":
+                surface.blit(self.image11, (b[0], b[1]))
+#Cuerpo
+            elif i!=0 and i<len(self.body)-1:
+                surface.blit(self.chooseSpriteForBody(i,self.bodyDireccion[i]), (b[0], b[1]))
+
+            elif i==0: #Cabeza
                 surface.blit(self.image, (b[0], b[1]))
-            elif i!=0:
+            elif i==len(self.body)-1:#cola
+                surface.blit(self.image9, (b[0], b[1]))      
+            elif i!=0:#cuerpo
                 surface.blit(self.image2, (b[0], b[1]))
+           
             
-                       
+           
+
             i+=1
+
+    def chooseSpriteForBody(self,i,bDireccion):
+    
+            if self.body[i][1] == self.body[i+1][1]:
+                    if self.body[i][1]<self.body[i-1][1]:
+                            if bDireccion=="izquierda":
+                                    return self.image13
+
+                            elif bDireccion=="derecha":  
+                                    return self.image14
+                                
+                    elif self.body[i][1]>self.body[i-1][1]:
+                            if bDireccion=="izquierda":
+                                    return self.image15
+
+                            elif bDireccion=="derecha":  
+                                    return self.image16
+                                
+                    elif self.body[i][1]==self.body[i-1][1]:
+                            return self.image2
+                        
+            elif self.body[i][0] == self.body[i+1][0]:
+                    
+                    if self.body[i][0]<self.body[i-1][0]:
+                            if bDireccion=="izquierda":
+                                    return self.image13
+
+                            elif bDireccion=="derecha":  
+                                   return self.image14
+                                
+                    elif self.body[i][0]>self.body[i-1][0]:
+                            if bDireccion=="izquierda":
+                                    return self.image15
+
+                            elif bDireccion=="derecha":  
+                                    return self.image16    
+                    elif self.body[i][0]==self.body[i-1][0]:
+                            return self.image7
+                
+
+            if self.body[i][1] == self.body[i+1][1]:
+                    
+                    if self.body[i][1]<self.body[i-1][1]:
+                            if bDireccion=="arriba":
+                                    return self.image14
+
+                            elif bDireccion=="abajo":  
+                                    return self.image13
+                                
+                    elif self.body[i][1]>self.body[i-1][1]:
+                            if bDireccion=="arriba":
+                                    return self.image16
+
+                            elif bDireccion=="abajo":  
+                                    return self.image15   
+                    elif self.body[i][1]==self.body[i-1][1]:
+                            return self.image7
+
+                        
+            elif self.body[i][0] == self.body[i+1][0]:
+                    
+                    if self.body[i][0]<self.body[i-1][0]:
+                            if bDireccion=="arriba":
+                                    return self.image13
+
+                            elif bDireccion=="abajo":  
+                                    return self.image15
+                    elif self.body[i][0]>self.body[i-1][0]:
+                            if bDireccion=="arriba":
+                                    return self.image14
+
+                            elif bDireccion=="abajo":  
+                                    return self.image16    
+                    elif self.body[i][0]==self.body[i-1][0]:
+                            return self.image7
+                            
+            return self.image2
+            
 
 class Obstaculo(object):
     def __init__(self):
@@ -151,13 +258,33 @@ class Manzana(object):
 
         self.x = 800
         self.y = 420
-
         self.image9 = pygame.image.load('images/manzana.png')
 
         self.body=[[self.x,self.y]]
 
-        self.hitbox = (self.x, self.y ,62,62) 
+        self.hitbox = (self.x, self.y ,31,31)
+
+       
+                
+
         
+        ####################################################
+##    def colisionManzana(self,player):
+##        colision = False
+##        i=0
+##        while i < len(self.ast_list):
+##            self.ast_list[i].animate()
+##            if p.rect.colliderect(self.ast_list[i].rect):
+##                colision = True
+##
+##            
+##            if self.ast_list[i].y > 700 or colision:
+##                self.ast_list.pop(i)
+##            else:
+##                i+=1
+##
+##        return colision
+       ############################################## 
     def draw(self, surface):
 
         i=0
@@ -186,8 +313,9 @@ screen = pygame.display.set_mode((ANCHO,ALTO))
 snake = Snake()
 obstaculo = Obstaculo()
 fondo = load_image('images/fondo.jpg')
-manzana = Manzana()
-
+manzana = Manzana() 
+#pygame.mixer.music.load('Musica/musiquita.mp3')
+#pygame.mixer.music.play(3)
 running = True
 while running:
     screen.blit(fondo, (0,0))
@@ -199,11 +327,9 @@ while running:
 
     snake.handle_keys()
     snake.animate()
-    
        
-
-    #if random.random() <  0.05:
-      #  snake.add()
+    if random.random() <  0.05:
+        snake.add()
     
     
     manzana.draw(screen)
