@@ -22,6 +22,13 @@ def load_image(filename, transparent=False):
                 image.set_colorkey(color, RLEACCEL)
         return image
 
+def checkCollision(rect1, rect2):
+
+    if rect1.x == rect2.x and rect1.y == rect2.y:
+        return True
+    else:
+        return False
+
 #Clases
 # ---------------------------------------------------------------------
 class Snake(object): 
@@ -58,6 +65,9 @@ class Snake(object):
         self.direccion = ""
         self.body=[[540,360],[540-self.rect.w,360],[540-self.rect.w*2,360]]
         self.bodyDireccion=["","",""]
+
+
+        ######        
 
     def handle_keys(self):
         key = pygame.key.get_pressed()
@@ -109,6 +119,10 @@ class Snake(object):
                 self.body[i][1]=gotoy
                 gotox=x
                 gotoy=y
+
+        self.rect.x = self.body[0][0]
+        self.rect.y = self.body[0][1]
+        
     def add(self):
         self.body.append([self.body[len(self.body)-1][0],self.body[len(self.body)-1][1]])#self.body.append(self.body[0].copy())
         self.bodyDireccion.append(self.bodyDireccion[len(self.bodyDireccion)-1])
@@ -125,7 +139,6 @@ class Snake(object):
                 surface.blit(self.image4, (b[0], b[1]))
             elif i==0 and self.direccion=="abajo":
                 surface.blit(self.image6, (b[0], b[1]))
-
          
 #cola
             elif i==len(self.body)-1 and self.bodyDireccion[i]=="derecha":
@@ -147,9 +160,6 @@ class Snake(object):
             elif i!=0:#cuerpo
                 surface.blit(self.image2, (b[0], b[1]))
            
-            
-           
-
             i+=1
 
     def chooseSpriteForBody(self,i,bDireccion):
@@ -233,72 +243,38 @@ class Snake(object):
 class Obstaculo(object):
     def __init__(self):
 
-        self.x = 640
-        self.y = 450
 
+        self.x=random.randrange(0,1080)
+        self.y=random.randrange(0,600)
+        
         self.image8 = pygame.image.load('images/puas.png')
 
-        self.body=[[self.x,self.y]]
+        self.rect = self.image8.get_rect()
 
-        self.hitbox = (self.x, self.y ,62,62) 
-        
+  
     def draw(self, surface):
 
-        i=0
-        
-        for b in self.body:
-            
-            if i==0:
-                self.hitbox 
-                surface.blit(self.image8, (b[0], b[1]))
-                pygame.draw.rect(screen, (255,0,0), self.hitbox,2)
+        surface.blit(self.image8,(self.x,self.y))
+
 
 class Manzana(object):
+        
     def __init__(self):
 
-        self.x = 800
-        self.y = 420
-        self.image9 = pygame.image.load('images/manzana.png')
+        self.image = pygame.image.load('images/manzana.png')
+        self.rect = self.image.get_rect()
+        self.cambio()
 
-        self.body=[[self.x,self.y]]
+    def draw(self,surface):
+        surface.blit(self.image,(self.x,self.y))
 
-        self.hitbox = (self.x, self.y ,31,31)
+    def cambio(self):
 
-       
-                
+        self.x=random.randrange(0,1080)
+        self.y=random.randrange(0,600)
+        self.rect.x = self.x
+        self.rect.y=self.y
 
-        
-        ####################################################
-##    def colisionManzana(self,player):
-##        colision = False
-##        i=0
-##        while i < len(self.ast_list):
-##            self.ast_list[i].animate()
-##            if p.rect.colliderect(self.ast_list[i].rect):
-##                colision = True
-##
-##            
-##            if self.ast_list[i].y > 700 or colision:
-##                self.ast_list.pop(i)
-##            else:
-##                i+=1
-##
-##        return colision
-       ############################################## 
-    def draw(self, surface):
-
-        i=0
-        
-        for b in self.body:
-            
-            if i==0:
-                self.hitbox 
-                surface.blit(self.image9, (b[0], b[1]))
-                pygame.draw.rect(screen, (255,0,0), self.hitbox,2)
-            
-
-            
-            
 
         
 
@@ -328,13 +304,22 @@ while running:
     snake.handle_keys()
     snake.animate()
        
-    if random.random() <  0.05:
-        snake.add()
+    #if random.random() <  0.05:
+  #      snake.add()
+
+
+    if snake.rect.colliderect(manzana):
+       snake.add()
+       manzana.cambio()
+
     
-    
+    snake.draw(screen)
     manzana.draw(screen)
     obstaculo.draw(screen)
-    snake.draw(screen)
+    
+    
+
+       
     pygame.display.update()
 
     time.sleep(0.1)
