@@ -236,20 +236,54 @@ class Snake(object):
 class Obstaculo(object):
     def __init__(self):
 
+        self.image = pygame.image.load('images/puas.png')
+        self.rect = self.image.get_rect()
 
-        self.x=random.randrange(0,ANCHO-62)
-        self.y=random.randrange(0,ALTO-62)
+       # self.body=[1020,540]
         
-        self.image8 = pygame.image.load('images/puas.png')
 
-        self.rect = self.image8.get_rect()
-
+        self.rect.x=round(random.randrange(0,ANCHO-178)/178.0)*178.0
+        self.rect.y=round(random.randrange(0,ALTO-178)/178.0)*178.0
+        
+        #self.rect.x = self.body[0]
+        #self.rect.y = self.body[1]
   
     def draw(self, surface):
+   
+        surface.blit(self.image,(self.rect.x, self.rect.y))
+      
+ 
+                
+     #   surface.blit(self.image,(self.x,self.y))
 
-        surface.blit(self.image8,(self.x,self.y))
+
+class Bordes(object):
+    def __init__(self):
 
 
+        self.image = pygame.image.load('images/bordesH.png')
+        self.image2 = pygame.image.load('images/bordesV.png')
+
+
+        self.rect = self.image.get_rect()
+            
+        self.body=[[0,0],[0,ALTO-60],[0,0],[ANCHO-60,0]]
+
+      # self.rect.x=random.randrange(0,ANCHO-62)
+        #self.rect.y=random.randrange(0,ALTO-62)
+        
+        
+    
+    def draw(self, surface):
+      
+        #surface.blit(self.image, (self.rect.x, self.rect.y))
+        surface.blit(self.image, (self.body[0][0], self.body[0][1]))
+        surface.blit(self.image, (self.body[1][0], self.body[1][1]))
+        surface.blit(self.image2, (self.body[2][0],self.body[2][1]))
+        surface.blit(self.image2, (self.body[3][0], self.body[3][1]))
+##
+                
+     #   surface.blit(self.image,(self.x,self.y))
 class Manzana(object):
         
     def __init__(self):
@@ -263,8 +297,8 @@ class Manzana(object):
 
     def cambio(self):
 
-        self.x=random.randrange(0,ANCHO-30)
-        self.y=random.randrange(0,ALTO-30)
+        self.x=round(random.randrange(0,ANCHO-30)/30.0)*30.0
+        self.y=round(random.randrange(0,ALTO-30)/30.0)*30.0
         self.rect.x = self.x
         self.rect.y=self.y
 
@@ -279,14 +313,21 @@ class Manzana(object):
 pygame.init()
 
 screen = pygame.display.set_mode((ANCHO,ALTO))
+pygame.display.set_caption("Snake Cyberpunk")
 snake = Snake()
 obstaculo = Obstaculo()
+bordes = Bordes()
 fondo =  pygame.image.load('images/fondo.png')
 manzana = Manzana() 
 pygame.mixer.music.load('Musica/musiquita.mp3')
 pygame.mixer.music.play(3)
 running = True
-sonidoManzana= pygame.mixer.Sound('Musica/comida.wav')
+pygame.mixer.music.load('Musica/musiquita.mp3')
+sonidoManzana=pygame.mixer.Sound('Musica/comida.wav')
+sonidoMuerte=pygame.mixer.Sound('Musica/muerte.wav')
+pygame.mixer.music.play(3)
+
+
 while running:
     screen.blit(fondo, (0,0))
     
@@ -298,18 +339,31 @@ while running:
     snake.handle_keys()
     snake.animate()
        
-    #if random.random() <  0.05:
-  #      snake.add()
 
 
-    if snake.rect.colliderect(manzana):
+    if snake.rect.colliderect(manzana.rect):
        snake.add()
        manzana.cambio()
        sonidoManzana.play()
+       
+    elif snake.rect.colliderect(obstaculo.rect):
+        sonidoMuerte.play()
+        running= False
+        pygame.mixer.music.stop()
+        
+    #elif snake.rect.colliderect(bordes.rect):
+        #sonidoMuerte.play()
+        #running= False
+        #pygame.mixer.music.stop()
+
+
+
+        
 
     snake.draw(screen)
     manzana.draw(screen)
-#    obstaculo.draw(screen)
+    obstaculo.draw(screen)
+    #bordes.draw(screen)
     
     
 
