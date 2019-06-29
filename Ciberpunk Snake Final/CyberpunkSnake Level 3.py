@@ -21,10 +21,11 @@ def texto(texto, posx, posy, color=(255, 255, 255), tam=20):
 	salida_rect.centery = posy
 	return salida, salida_rect
 
-
+     
 #Clases
 # ---------------------------------------------------------------------
-class Snake(object): 
+class Snake(object):
+        
     def __init__(self):
         self.image = pygame.image.load('images/serpiente/CabezaDerecha.png')
         self.image2 = pygame.image.load('images/serpiente/CuerpoH.png')
@@ -52,17 +53,7 @@ class Snake(object):
         
         # posicion
         self.rect = self.image.get_rect()
-##        self.rect2 = self.image2.get_rect()
-##        self.rect3 = self.image3.get_rect()
-##        self.rect7 = self.image6.get_rect()
-##        self.rect8 = self.image9.get_rect()
-##        self.rect9 = self.image10.get_rect()
-##        self.rect10 = self.image11.get_rect()
-##        self.rect11 = self.image12.get_rect()
-##        self.rect12 = self.image13.get_rect()
-##        self.rect13 = self.image14.get_rect()
-##        self.rect14 = self.image15.get_rect()
-##        self.rect15 = self.image16.get_rect()
+
         
         self.timetoreload = 0
         
@@ -89,9 +80,12 @@ class Snake(object):
                      self.direccion = "derecha" 
 
         elif key[pygame.K_LEFT]:  
-            if self.direccion !="derecha":
+            if self.direccion == "":
+                     self.direccion=""
+
+            elif self.direccion !="derecha":
                      self.direccion = "izquierda"
-                     
+       
 
 
     def animate(self):
@@ -161,23 +155,11 @@ class Snake(object):
             elif i==0 and self.direccion=="abajo":
                 surface.blit(self.image6, (b[0], b[1]))
          
-#cola 
-            elif i==len(self.body)-1 and self.bodyDireccion[i]=="derecha":
-                surface.blit(self.image9, (b[0], b[1]))
-##                self.rect8.x = b[0]
-##                self.rect8.y= b[1]  
-            elif i==len(self.body)-1 and self.bodyDireccion[i]=="izquierda":
-                surface.blit(self.image10, (b[0], b[1]))
-##                self.rect9.x = b[0]
-##                self.rect9.y= b[1]
-            elif i==len(self.body)-1  and self.bodyDireccion[i]=="arriba":
-                surface.blit(self.image12, (b[0], b[1]))
-##                self.rect10.x = b[0]
-##                self.rect10.y= b[1]
-            elif i==len(self.body)-1 and self.bodyDireccion[i]=="abajo":
-                surface.blit(self.image11, (b[0], b[1]))
-##                self.rect11.x = b[0]
-##                self.rect11.y= b[1]
+
+#cola
+            elif i==len(self.body)-1:
+                surface.blit(self.chooseSpriteForCola(i,self.bodyDireccion[i]), (b[0], b[1]))
+
 #Cuerpo
             elif i!=0 and i<len(self.body)-1:
                 surface.blit(self.chooseSpriteForBody(i,self.bodyDireccion[i]), (b[0], b[1]))
@@ -190,9 +172,26 @@ class Snake(object):
            
             i+=1
 
+
+    def chooseSpriteForCola(self,i,bDireccion):
+
+            if  self.body[len(self.body)-2][1]==self.body[len(self.body)-1][1] :
+                    if self.body[len(self.body)-2][0]<self.body[len(self.body)-1][0]:
+                            return self.image10
+                    elif self.body[len(self.body)-2][0]>self.body[len(self.body)-1][0]:
+                            return self.image9
+                                               
+            elif  self.body[len(self.body)-2][0]==self.body[len(self.body)-1][0] :
+                    if self.body[len(self.body)-2][1]<self.body[len(self.body)-1][1]:
+                            return self.image12
+                    elif self.body[len(self.body)-2][1]>self.body[len(self.body)-1][1]:
+                            return self.image11
+              
+            return self.image2
+        
     def chooseSpriteForBody(self,i,bDireccion):
     
-            if self.body[i][1] == self.body[i+1][1]:
+            if self.body[i+1][1] == self.body[i][1]:
                     if self.body[i][1]<self.body[i-1][1]:
                             if bDireccion=="izquierda":
                                     return self.image13
@@ -245,8 +244,7 @@ class Snake(object):
                             elif bDireccion=="abajo":  
                                     return self.image15   
                     elif self.body[i][1]==self.body[i-1][1]:
-                            return self.image7
-
+                            return self.image2
                         
             elif self.body[i][0] == self.body[i+1][0]:
                     

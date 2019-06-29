@@ -75,9 +75,12 @@ class Snake(object):
                      self.direccion = "derecha" 
 
         elif key[pygame.K_LEFT]:  
-            if self.direccion !="derecha":
-                     self.direccion = "izquierda"
+            if self.direccion == "":
+                     self.direccion=""
 
+            elif self.direccion !="derecha":
+                     self.direccion = "izquierda"
+       
 
     def animate(self):
         gotox = self.body[0][0]
@@ -146,14 +149,8 @@ class Snake(object):
                 surface.blit(self.image6, (b[0], b[1]))
          
 #cola
-            elif i==len(self.body)-1 and self.bodyDireccion[i]=="derecha":
-                surface.blit(self.image9, (b[0], b[1]))
-            elif i==len(self.body)-1 and self.bodyDireccion[i]=="izquierda":
-                surface.blit(self.image10, (b[0], b[1]))
-            elif i==len(self.body)-1  and self.bodyDireccion[i]=="arriba":
-                surface.blit(self.image12, (b[0], b[1]))
-            elif i==len(self.body)-1 and self.bodyDireccion[i]=="abajo":
-                surface.blit(self.image11, (b[0], b[1]))
+            elif i==len(self.body)-1:
+                surface.blit(self.chooseSpriteForCola(i,self.bodyDireccion[i]), (b[0], b[1]))
 #Cuerpo
             elif i!=0 and i<len(self.body)-1:
                 surface.blit(self.chooseSpriteForBody(i,self.bodyDireccion[i]), (b[0], b[1]))
@@ -166,6 +163,21 @@ class Snake(object):
                 surface.blit(self.image2, (b[0], b[1]))
            
             i+=1
+    def chooseSpriteForCola(self,i,bDireccion):
+
+            if  self.body[len(self.body)-2][1]==self.body[len(self.body)-1][1] :
+                    if self.body[len(self.body)-2][0]<self.body[len(self.body)-1][0]:
+                            return self.image10
+                    elif self.body[len(self.body)-2][0]>self.body[len(self.body)-1][0]:
+                            return self.image9
+                                               
+            elif  self.body[len(self.body)-2][0]==self.body[len(self.body)-1][0] :
+                    if self.body[len(self.body)-2][1]<self.body[len(self.body)-1][1]:
+                            return self.image12
+                    elif self.body[len(self.body)-2][1]>self.body[len(self.body)-1][1]:
+                            return self.image11
+              
+            return self.image2
 
     def chooseSpriteForBody(self,i,bDireccion):
     
